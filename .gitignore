@@ -7,9 +7,10 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-# IDEA Settings
+# Clion Settings
 /.idea/
-/Class_03/.idea/
+/*/.idea/
+/*/cmake-build-debug/
 
 ## From Github default .gitignore for C++
 # Prerequisites
