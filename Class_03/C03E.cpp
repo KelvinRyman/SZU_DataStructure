@@ -1,4 +1,7 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <iomanip>
+#include <stack>
+#include <algorithm>
 using namespace std;
 
 class Expression {
@@ -40,72 +43,67 @@ double Expression::calculate(double Operand1, double Operand2, char Operator) {
 }
 
 double Expression::evaluateExpression() {
-  stack<char> operators;
-  stack<double> operands;
+  stack<double> Operand;
+  stack<char> Operator;
 
-  string str = exp;
-  while (!str.empty()) {
-    if ((str[0] >= '0' && str[0] <= '9') || str[0] == '.') {
-      // 当字符为数字或者浮点数的时候，将其压入操作数栈
-      string num = "";
-      while ((str[0] >= '0' && str[0] <= '9') || str[0] == '.') {
-        num += str[0];
-        str.erase(0, 1);
+  int i = 0;
+  while (i < exp.length() || Operator.top() != '#') {
+    if (isdigit(exp[i]) || exp[i] == '.') {
+      bool isFloat = false;
+      double num = 0, dec = 10;
+      while (isdigit(exp[i]) || exp[i] == '.') {
+        if (exp[i] == '.') {
+          isFloat = true;
+          i++;
+        } else if (!isFloat) {
+          num = num * 10 + (exp[i] - '0');
+          i++;
+        } else {
+          num = num + (exp[i] - '0') / dec;
+          dec *= 10;
+          i++;
+        }
       }
+      Operand.push(num);
 
-      char *endPtr;
-      operands.push(strtod(num.c_str(), &endPtr));
+    } else if (exp[i] == ' ') {
+      i++;
+      continue;
 
-      if (*endPtr != '\0') {
-        cerr << "error of strtod\n";
-        return -1;
-      }
-
-    } else if (operators.empty()) {
-      // 当操作符栈为空的时候，将操作符压入操作符栈
-      operators.push(str[0]);
-      str.erase(0, 1);
+    } else if (Operator.empty()) {
+      Operator.push(exp[i++]);
 
     } else {
-      int operator_1, operator_2;
-      for (int i = 0; i < 7; ++i) {
-        if (OPERATOR_SET[i] == operators.top()) {
-          operator_1 = i;
+      switch (PRIOR[find(OPERATOR_SET, OPERATOR_SET + 7, Operator.top()) - OPERATOR_SET]
+      [find(OPERATOR_SET, OPERATOR_SET + 7, exp[i]) - OPERATOR_SET]) {
+        case '<':Operator.push(exp[i]);
+          i++;
           break;
-        }
-      }
-      for (int i = 0; i < 7; ++i) {
-        if (OPERATOR_SET[i] == str[0]) {
-          operator_2 = i;
+        case '=':Operator.pop();
+          i++;
           break;
-        }
-      }
-
-      if (PRIOR[operator_1][operator_2] == '<') {
-        operators.push(str[0]);
-        str.erase(0, 1);
-      } else if (PRIOR[operator_1][operator_2] == '>') {
-        double operand_2 = operands.top();
-        operands.pop();
-        double operand_1 = operands.top();
-        operands.pop();
-        operands.push(calculate(operand_1, operand_2, operators.top()));
-        operators.pop();
-      } else {
-        str.erase(0, 1);
-        operators.pop();
+        case '>':double Operand2 = Operand.top();
+          Operand.pop();
+          double Operand1 = Operand.top();
+          Operand.pop();
+          Operand.push(calculate(Operand1, Operand2, Operator.top()));
+          Operator.pop();
+          break;
       }
     }
   }
-  return operands.top();
-};
+  return Operand.top();
+}
 
 int main() {
   int t;
   cin >> t;
+  cin.ignore();
+
   while (t--) {
     Expression exp;
     cout << fixed << setprecision(4) << exp.evaluateExpression() << '\n';
   }
+
   return 0;
 }
