@@ -1,87 +1,70 @@
-#include <iostream>
-#include <stack>
-#include <vector>
+#include <bits/stdc++.h>
 
 using namespace std;
 
-bool isValidMove(int x, int y, int n, const vector<vector<int>> &maze) {
-  return x >= 0 && x < n && y >= 0 && y < n && maze[x][y] == 0;
-}
-
 struct Position {
-  int xp, yp;
-  Position(int x, int y) : xp(x), yp(y) {}
+  int x, y;
+  Position(int x = 0, int y = 0) : x(x), y(y) {}
 };
 
-void findPath(const vector<vector<int>> &maze) {
-  int n = static_cast<int>(maze.size());
-  stack<Position> stack;
-  stack.emplace(0, 0);
-  vector<Position> path;
-  vector<Position> path1;
+bool isValid(const vector<vector<int>> &maze, vector<vector<bool>> &visited, int x, int y) {
+  return x >= 0 && y >= 0 && x < maze.size() && y < maze[0].size() && maze[x][y] == 0 && !visited[x][y];
+}
 
-  vector<pair<int, int>> directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
-  Position start(0, 0);
-  Position end(n - 1, n - 1);
+void solveMaze(const vector<vector<int>> &maze) {
+  stack<Position> path;
+  vector<vector<bool>> visited(maze.size(), vector<bool>(maze[0].size(), false));
+  Position offsets[4] = {Position(-1, 0), Position(1, 0), Position(0, -1), Position(0, 1)};
+  path.push(Position(0, 0));
+  visited[0][0] = true;
 
-  while (!stack.empty()) {
-    Position current = stack.top();
-    stack.pop();
-    path.push_back(current);
+  while (!path.empty()) {
+    Position pos = path.top();
+    if (pos.x == maze.size() - 1 && pos.y == maze[0].size() - 1) break;
 
-    if (current.xp == end.xp && current.yp == end.yp) {
-      while (!path.empty()) {
-        path1.push_back(path.back());
-        path.pop_back();
+    bool deadend = true;
+    for (int i = 0; i < 4; ++i) {
+      Position next(pos.x + offsets[i].x, pos.y + offsets[i].y);
+      if (isValid(maze, visited, next.x, next.y)) {
+        path.push(next);
+        visited[next.x][next.y] = true;
+        deadend = false;
+        break;
       }
     }
 
-    bool found = false;
-    for (const auto &dir : directions) {
-      int nx = current.xp + dir.first;
-      int ny = current.yp + dir.second;
-      if (isValidMove(nx, ny, n, maze)) {
-        stack.emplace(nx, ny);
-        found = true;
-      }
-    }
-
-    if (!found) {
-      path.pop_back();
-    }
+    if (deadend) path.pop();
   }
 
-  if (!path1.empty()) {
-    int i = 0;
-    while (!path1.empty()) {
-      Position cpos = path1.back();
-      path1.pop_back();
-      if ((i + 1) % 4 == 0) {
-        cout << "[" << cpos.xp << "," << cpos.yp << "]--" << endl;
-      } else {
-        cout << "[" << cpos.xp << "," << cpos.yp << "]--";
-      }
-      i++;
-    }
-    cout << "END" << endl;
-  } else {
+  stack<Position> path1;
+  if (path.empty()) {
     cout << "no path" << endl;
+  } else {
+    while (!path.empty()) {
+      path1.push(path.top());
+      path.pop();
+    }
+    int count = 0;
+    while (!path1.empty()) {
+      Position cpos = path1.top();
+      path1.pop();
+      if (++count % 4 == 0) cout << '[' << cpos.x << ',' << cpos.y << ']' << "--\n";
+      else cout << '[' << cpos.x << ',' << cpos.y << ']' << "--";
+    }
+    cout << "END\n";
   }
 }
 
 int main() {
   int t;
-  cin >> t;  // 迷宫数量
+  cin >> t;
   while (t--) {
     int n;
-    cin >> n;  // 迷宫尺寸
-    vector<vector<int>> maze(n, vector<int>(n, 0));
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < n; ++j) {
+    cin >> n;
+    vector<vector<int>> maze(n, vector<int>(n));
+    for (int i = 0; i < n; ++i)
+      for (int j = 0; j < n; ++j)
         cin >> maze[i][j];
-      }
-    }
-    findPath(maze);
+    solveMaze(maze);
   }
-  return 0;
 }
