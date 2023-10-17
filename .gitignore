@@ -11,6 +11,9 @@
 /.idea/
 /*/.idea/
 /*/cmake-build-debug/
+/.vscode/
+# Lab
+/Lab/
 
 ## From Github default .gitignore for C++
 # Prerequisites
