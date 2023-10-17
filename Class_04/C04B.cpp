@@ -4,6 +4,9 @@
 using namespace std;
 
 int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+
   int n;
   cin >> n;
   queue<int> A, B;
@@ -14,8 +17,8 @@ int main() {
       B.push(id);
     else
       A.push(id);
-
   }
+
   while (!A.empty() || !B.empty()) {
     if (!A.empty()) {
       cout << A.front() << " ";
@@ -30,6 +33,7 @@ int main() {
       B.pop();
     }
   }
+
   cout << '\n';
   return 0;
 }

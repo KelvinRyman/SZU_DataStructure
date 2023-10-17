@@ -2,12 +2,12 @@
 #include <iostream>
 #include <queue>
 #include <vector>
-
 using namespace std;
 
 struct Customer {
   int arriveTime;
   int processTime;
+  int is_VIP;
 };
 
 int main() {
@@ -15,10 +15,12 @@ int main() {
   cin >> N;
   vector<Customer> customers(N);
   for (int i = 0; i < N; i++) {
-    cin >> customers[i].arriveTime >> customers[i].processTime;
+    cin >> customers[i].arriveTime >> customers[i].processTime >> customers[i].is_VIP;
   }
   int K;
   cin >> K;
+  int VIP;
+  cin >> VIP;
 
   priority_queue<int, vector<int>, greater<>> windows;
   for (int i = 0; i < K; i++) {

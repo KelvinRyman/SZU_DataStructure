@@ -5,6 +5,9 @@
 using namespace std;
 
 int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+
   int t;
   cin >> t;
   while (t--) {
@@ -16,16 +19,20 @@ int main() {
     stack<int> s;
     queue<int> q;
     int integer = (int) num;
-    double demical = num - integer;
+    double decimal = num - integer;
 
-    while (integer > 0) {
-      s.push(integer % base);
-      integer /= base;
+    if (integer == 0) {
+      s.push(0);
+    } else {
+      while (integer > 0) {
+        s.push(integer % base);
+        integer /= base;
+      }
     }
-    while (demical > 0) {
-      demical *= base;
-      q.push((int) demical);
-      demical -= (int) demical;
+    while (decimal > 0) {
+      decimal *= base;
+      q.push((int) decimal);
+      decimal -= (int) decimal;
     }
 
     while (!s.empty()) {

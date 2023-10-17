@@ -2,18 +2,16 @@
 #include <iostream>
 #include <stack>
 #include <vector>
-
 using namespace std;
 
 int main() {
-  string childrenQueue;
-  cin >> childrenQueue;
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+  string childQue;
+  cin >> childQue;
 
-  char boyChar, girlChar; // 存储小男孩和小女孩的字符
-  char otherChar; // 存储可能的其他字符
-
-  // 找到两个不同的字符
-  for (char ch : childrenQueue) {
+  char boyChar, girlChar;
+  for (char ch : childQue) {
     if (boyChar == 0) {
       boyChar = ch;
     } else if (ch != boyChar) {
@@ -22,22 +20,20 @@ int main() {
     }
   }
 
-  stack<int> boyIndices;
+  stack<int> indices;
   vector<pair<int, int>> pairs;
-
-  for (int i = 0; i < childrenQueue.size(); i++) {
-    if (childrenQueue[i] == boyChar) {
-      boyIndices.push(i);
-    } else if (childrenQueue[i] == girlChar) {
-      int boyIndex = boyIndices.top();
-      boyIndices.pop();
-      pairs.push_back({boyIndex, i});
+  for (int i = 0; i < childQue.size(); i++) {
+    if (childQue[i] == boyChar) {
+      indices.push(i);
+    } else if (childQue[i] == girlChar) {
+      int boyIndex = indices.top();
+      indices.pop();
+      pairs.emplace_back(boyIndex, i);
     }
   }
 
-  for (const auto& pair : pairs) {
+  for (auto &pair : pairs) {
     cout << pair.first << " " << pair.second << endl;
   }
-
   return 0;
 }
