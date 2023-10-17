@@ -14,6 +14,8 @@
 /.vscode/
 # Lab
 /Lab/
+# output
+/output/
 
 ## From Github default .gitignore for C++
 # Prerequisites
