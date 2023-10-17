@@ -1,12 +1,11 @@
-//
-// Created by myour on 2023/9/13.
-//
-#include <iostream>
-#include <stack>
+#include <bits/stdc++.h>
 
 using namespace std;
 
 int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+
   int t;
   cin >> t;
   cin.ignore();
@@ -15,27 +14,30 @@ int main() {
     getline(cin, str);
     stack<char> st;
     bool error_flag = false;
-    for (char &ch: str) {
+    for (char &ch : str) {
       if (ch == '(' || ch == '[' || ch == '{') {
         st.push(ch);
-      } else if (ch == ')' && st.top() == '(') {
+      } else if (ch == ')' && !st.empty() && st.top() == '(' ) {
         st.pop();
-      } else if (ch == ']' && st.top() == '[') {
+      } else if (ch == ']' && !st.empty() && st.top() == '[') {
         st.pop();
-      } else if (ch == '}' && st.top() == '{') {
+      } else if (ch == '}' && !st.empty() && st.top() == '{') {
         st.pop();
       } else if (ch == ')' || ch == ']' || ch == '}') {
         cout << "error" << endl;
+        error_flag = true;
         break;
+      } else {
+        continue;
       }
     }
+
+    if (error_flag) continue;
     if (!st.empty()) {
       cout << "error\n";
-      error_flag = true;
+      continue;
     }
-    if (!error_flag) {
-      cout << "ok\n";
-    }
+    cout << "ok\n";
   }
   return 0;
 }

@@ -1,6 +1,3 @@
-//
-// Created by myour on 2023/9/13.
-//
 #include <iostream>
 #include <stack>
 #include <algorithm>
@@ -16,7 +13,7 @@ int main() {
     string str;
     getline(cin, str);
     stack<char> st;
-    for (char &ch: str) {
+    for (const char &ch: str) {
       if (ch != '#') {
         st.push(ch);
       } else {
