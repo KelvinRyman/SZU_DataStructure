@@ -1,90 +1,67 @@
-// DS二叉树——后序遍历
+// DS二叉树——二叉树之数组存储
 #include <iostream>
 #include <stack>
 using namespace std;
 
 struct TreeNode {
-  char val;
+  int val;
   TreeNode *left;
   TreeNode *right;
-  explicit TreeNode(char x) : val(x), left(nullptr), right(nullptr) {}
+  explicit TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-TreeNode *buildTree(char *&preorder) {
-  char val = *preorder;
-  preorder++;
-  if (val == '0') {
+TreeNode *buildTree_fromArray(int tree[], int index, const int &n) {
+  if (tree[index] == 0 || index > n) {
     return nullptr;
+  } else {
+    auto *newNode = new TreeNode(tree[index]);
+    newNode->left = buildTree_fromArray(tree, 2 * index, n);
+    newNode->right = buildTree_fromArray(tree, 2 * index + 1, n);
+    return newNode;
   }
-
-  auto *node = new TreeNode(val);
-  node->left = buildTree(preorder);
-  node->right = buildTree(preorder);
-  return node;
 }
 
-void postorderTraversal(TreeNode *root) {
+void preorderTraversal_iteration(TreeNode *root) {
+  if (!root) {
+    return;
+  }
+  stack<TreeNode *> nodeStack;
+  nodeStack.push(root);
+
+  while (!nodeStack.empty()) {
+    TreeNode *node = nodeStack.top();
+    nodeStack.pop();
+    cout << node->val << ' ';
+
+    if (node->right) {
+      nodeStack.push(node->right);
+    }
+    if (node->left) {
+      nodeStack.push(node->left);
+    }
+  }
+}
+
+void freeTree_iteration(TreeNode *root) {
   if (!root) {
     return;
   }
 
   stack<TreeNode *> nodeStack;
-  nodeStack.push(root);
-  TreeNode *prev = nullptr;
-  while (!nodeStack.empty()) {
-    TreeNode *curr = nodeStack.top();
-    if (!prev || prev->left == curr || prev->right == curr) {   // 第一次迭代或者 prev 是 curr 的父节点
-      if (curr->left) {
-        nodeStack.push(curr->left);
-      } else if (curr->right) {
-        nodeStack.push(curr->right);
-      } else {
-        cout << curr->val;
-        nodeStack.pop();
-      }
-    } else if (curr->left == prev) {
-      if (curr->right) {
-        nodeStack.push(curr->right);
-      } else {
-        cout << curr->val;
-        nodeStack.pop();
-      }
-    } else if (curr->right == prev) {
-      cout << curr->val;
-      nodeStack.pop();
-    }
-    prev = curr;
-  }
-  cout << '\n';
-}
-
-void postorderTraversal1(TreeNode *root) {
-  if (!root) return;
-
-  stack<TreeNode *> s1, s2;
-  s1.push(root);
-
-  while (!s1.empty()) {
-    TreeNode *current = s1.top();
-    s1.pop();
-    s2.push(current);
-
-    if (current->left) {
-      s1.push(current->left);
+  TreeNode *current = root;
+  while (current || !nodeStack.empty()) {
+    while (current) {
+      nodeStack.push(current);
+      current = current->left;
     }
 
-    if (current->right) {
-      s1.push(current->right);
-    }
-  }
+    current = nodeStack.top();
+    nodeStack.pop();
+    TreeNode *temp = current;
+    current = current->right;
 
-  while (!s2.empty()) {
-    TreeNode *current = s2.top();
-    s2.pop();
-    cout << current->val << " ";
+    delete temp;
   }
-
-  cout << '\n';
 }
 
 int main() {
@@ -94,12 +71,18 @@ int main() {
   int t;
   cin >> t;
   while (t--) {
-    string preorder;
-    cin >> preorder;
-    char *input = &preorder[0];
-    auto *root = buildTree(input);
+    int n;
+    cin >> n;
+    int treeArr[n + 1];
 
-    postorderTraversal(root);
+    for (int i = 1; i <= n; i++) {
+      cin >> treeArr[i];
+    }
+
+    auto *root = buildTree_fromArray(treeArr, 1, n);
+    preorderTraversal_iteration(root);
+    cout << '\n';
+    freeTree_iteration(root);
   }
 
   return 0;

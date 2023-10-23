@@ -1,4 +1,4 @@
-// DS二叉树——层次遍历
+// DS树--二叉树高度
 #include <iostream>
 #include <queue>
 using namespace std;
@@ -22,25 +22,40 @@ TreeNode *buildTree(char *&preorder) {
   return newNode;
 }
 
-void levelTraversal(TreeNode *root) {
-  if (!root) {
-    return;
-  }
+TreeNode *initTree(string preorder) {
+  char *input = &preorder[0];
+  return buildTree(input);
+}
 
-  queue<TreeNode *> nodeQueue;
-  nodeQueue.push(root);
-  while (!nodeQueue.empty()) {
-    TreeNode *node = nodeQueue.front();
-    nodeQueue.pop();
-    cout << node->val;
-    if (node->left) {
-      nodeQueue.push(node->left);
-    }
-    if (node->right) {
-      nodeQueue.push(node->right);
+//int maxDepth(TreeNode *root) {
+//  if (!root) {
+//    return 0;
+//  }
+//  return max(maxDepth(root->left), maxDepth(root->right)) + 1;
+//}
+
+int maxDepth_iteration(TreeNode *root) {
+  if (!root) {
+    return 0;
+  }
+  int depth = 0;
+  queue<TreeNode *> q;
+  q.push(root);
+  while (!q.empty()) {
+    depth++;
+    int size = q.size();
+    while (size--) {
+      auto *node = q.front();
+      q.pop();
+      if (node->left) {
+        q.push(node->left);
+      }
+      if (node->right) {
+        q.push(node->right);
+      }
     }
   }
-  cout << '\n';
+  return depth;
 }
 
 int main() {
@@ -52,10 +67,8 @@ int main() {
   while (t--) {
     string preorder;
     cin >> preorder;
-    char *input = &preorder[0];
-    TreeNode *root = buildTree(input);
-
-    levelTraversal(root);
+    TreeNode *root = initTree(preorder);
+    cout << maxDepth_iteration(root) << '\n';
   }
 
   return 0;

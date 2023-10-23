@@ -1,49 +1,47 @@
-// DS队列----银行单队列多窗口模拟
-#include <iostream>
-#include <queue>
-#include <vector>
+// 子串循环问题(Ver. I)
+#include <bits/stdc++.h>
 using namespace std;
 
-struct Customer {
-  int arriveTime;
-  int processTime;
-  int is_VIP;
-};
+vector<int> getNextArr(string str) {
+  int n = str.length();
+  int i = 0, j = -1;
+  vector<int> next(n + 1, 0);
+  next[0] = -1;
+  while (i < n) {
+    if (j == -1 || str[i] == str[j]) {
+      i++;
+      j++;
+      next[i] = j;
+    } else {
+      j = next[j];
+    }
+  }
+
+  return next;
+}
+
+int findMinRepPeriodLength(const string &str) {
+  int n = str.length();
+  vector<int> next = getNextArr(str);
+  int cir = n - next[n], adl;
+  if (cir != n && n % cir == 0) {
+    adl = 0;
+  } else {
+    adl = cir - n % cir;
+  }
+  return adl;
+}
 
 int main() {
-  int N;
-  cin >> N;
-  vector<Customer> customers(N);
-  for (int i = 0; i < N; i++) {
-    cin >> customers[i].arriveTime >> customers[i].processTime >> customers[i].is_VIP;
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+
+  int t;
+  cin >> t;
+  while (t--) {
+    string str;
+    cin >> str;
+    cout << findMinRepPeriodLength(str) << '\n';
   }
-  int K;
-  cin >> K;
-  int VIP;
-  cin >> VIP;
-
-  priority_queue<int, vector<int>, greater<>> windows;
-  for (int i = 0; i < K; i++) {
-    windows.push(0);
-  }
-
-  int totalWaitTime = 0;
-  int maxWaitTime = 0;
-  int lastFinishTime = 0;
-
-  for (const Customer &customer : customers) {
-    int earliestFreeTime = windows.top();
-    windows.pop();
-    int waitTime = max(0, earliestFreeTime - customer.arriveTime);
-    totalWaitTime += waitTime;
-    maxWaitTime = max(maxWaitTime, waitTime);
-    int finishTime = max(earliestFreeTime, customer.arriveTime) + customer.processTime;
-    lastFinishTime = max(lastFinishTime, finishTime);
-    windows.push(finishTime);
-  }
-
-  double averageWaitTime = (double) totalWaitTime / N;
-  printf("%.1f %d %d\n", averageWaitTime, maxWaitTime, lastFinishTime);
-
   return 0;
 }

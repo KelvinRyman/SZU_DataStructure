@@ -1,5 +1,7 @@
-#include <bits/stdc++.h>
-
+// DS队列+堆栈–数制转换
+#include <iostream>
+#include <queue>
+#include <stack>
 using namespace std;
 
 int main() {
@@ -8,36 +10,53 @@ int main() {
 
   int t;
   cin >> t;
-  cin.ignore();
   while (t--) {
-    string str;
-    getline(cin, str);
-    stack<char> st;
-    bool error_flag = false;
-    for (char &ch : str) {
-      if (ch == '(' || ch == '[' || ch == '{') {
-        st.push(ch);
-      } else if (ch == ')' && !st.empty() && st.top() == '(' ) {
-        st.pop();
-      } else if (ch == ']' && !st.empty() && st.top() == '[') {
-        st.pop();
-      } else if (ch == '}' && !st.empty() && st.top() == '{') {
-        st.pop();
-      } else if (ch == ')' || ch == ']' || ch == '}') {
-        cout << "error" << endl;
-        error_flag = true;
-        break;
+    double num;
+    cin >> num;
+    int base;
+    cin >> base;
+
+    stack<int> s;
+    queue<int> q;
+    int integer = (int) num;
+    double decimal = num - integer;
+
+    if (integer == 0) {
+      s.push(0);
+    } else {
+      while (integer > 0) {
+        s.push(integer % base);
+        integer /= base;
+      }
+    }
+    while (decimal > 0) {
+      decimal *= base;
+      q.push((int) decimal);
+      decimal -= (int) decimal;
+    }
+
+    while (!s.empty()) {
+      int top = s.top();
+      s.pop();
+      if (top >= 10) {
+        cout << (char) ('A' + top - 10);
       } else {
-        continue;
+        cout << top;
       }
     }
 
-    if (error_flag) continue;
-    if (!st.empty()) {
-      cout << "error\n";
-      continue;
+    cout << '.';
+
+    int count = 0;
+    while (!q.empty() && count < 3) {
+      cout << q.front();
+      q.pop();
+      count++;
     }
-    cout << "ok\n";
+    while (count < 3) {
+      cout << '0';
+      count++;
+    }
   }
   return 0;
 }

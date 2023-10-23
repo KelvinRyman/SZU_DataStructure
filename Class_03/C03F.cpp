@@ -1,66 +1,39 @@
-#include <bits/stdc++.h>
+// DS栈+队列----排队游戏
+#include <iostream>
+#include <stack>
+#include <vector>
 using namespace std;
-
-struct point {
-  int x, y;
-};
-
-int dx[4] = {0, 1, 0, -1};
-int dy[4] = {1, 0, -1, 0};
-
-void solve() {
-  int n;
-  cin >> n;
-  vector<vector<int>> maze(n, vector<int>(n));
-  for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) cin >> maze[i][j];
-  vector<vector<int>> vis(n, vector<int>(n, 0));
-
-  stack<point> path, temp;
-  path.push({0, 0});
-  vis[0][0] = 1;
-
-  while (!path.empty()) {
-    point top = path.top();
-    if (top.x == n - 1 && top.y == n - 1) break;
-
-    bool flag = false;
-    for (int i = 0; i < 4; ++i) {
-      int nx = top.x + dx[i], ny = top.y + dy[i];
-      if (nx >= 0 && nx < n && ny >= 0 && ny < n && maze[nx][ny] == 0 && !vis[nx][ny]) {
-        path.push({nx, ny});
-        vis[nx][ny] = 1;
-        flag = true;
-        break;
-      }
-    }
-
-    if (!flag) path.pop();
-  }
-
-  while (!path.empty()) {
-    temp.push(path.top());
-    path.pop();
-  }
-
-  int i = 0;
-  while (!temp.empty()) {
-    point cpos = temp.top();
-    temp.pop();
-    if (++i % 4 == 0) cout << '[' << cpos.x << ',' << cpos.y << ']' << "--\n";
-    else cout << '[' << cpos.x << ',' << cpos.y << ']' << "--";
-  }
-
-  if (i == 0) cout << "no path\n";
-  else cout << "END\n";
-}
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(nullptr);
+  string childQue;
+  cin >> childQue;
 
-  int t;
-  cin >> t;
-  while (t--) solve();
+  char boyChar, girlChar;
+  for (char ch : childQue) {
+    if (boyChar == 0) {
+      boyChar = ch;
+    } else if (ch != boyChar) {
+      girlChar = ch;
+      break;
+    }
+  }
 
+  stack<int> indices;
+  vector<pair<int, int>> pairs;
+  for (int i = 0; i < childQue.size(); i++) {
+    if (childQue[i] == boyChar) {
+      indices.push(i);
+    } else if (childQue[i] == girlChar) {
+      int boyIndex = indices.top();
+      indices.pop();
+      pairs.emplace_back(boyIndex, i);
+    }
+  }
+
+  for (auto &pair : pairs) {
+    cout << pair.first << " " << pair.second << endl;
+  }
   return 0;
 }

@@ -1,44 +1,35 @@
-// DS队列–组队列
-#include <iostream>
-#include <queue>
-#include <unordered_map>
-#include <string>
+// DS 串应用 — 最长重复子串
+#include <bits/stdc++.h>
 using namespace std;
+
+int longestRepSubStrLength(const string &str) {
+  int n = str.length();
+  vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+  int maxLength = 0;
+
+  for (int i = 1; i <= n; i++) {
+    for (int j = i + 1; j <= n; j++) {
+      if (str[i - 1] == str[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1] + 1;
+        maxLength = max(maxLength, dp[i][j]);
+      }
+    }
+  }
+
+  return maxLength > 0 ? maxLength : -1;
+}
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(nullptr);
 
-  int t, n, x;
+  int t;
   cin >> t;
-  unordered_map<int, int> group;
-  for (int i = 0; i < t; ++i) {
-    cin >> n;
-    for (int j = 0; j < n; ++j) {
-      cin >> x;
-      group[x] = i;
-    }
-  }
-  queue<int> q;
-  queue<int> q_group[10];
-  string command;
-  while (cin >> command) {
-    if (command == "STOP") {
-      break;
-    } else if (command == "ENQUEUE") {
-      cin >> x;
-      if (q_group[group[x]].empty()) {
-        q.push(group[x]);
-      }
-      q_group[group[x]].push(x);
-    } else if (command == "DEQUEUE") {
-      int front_group = q.front();
-      cout << q_group[front_group].front() << " ";
-      q_group[front_group].pop();
-      if (q_group[front_group].empty()) {
-        q.pop();
-      }
-    }
+  for (int i = 0; i < t; i++) {
+    string str;
+    cin >> str;
+
+    cout << longestRepSubStrLength(str) << '\n';
   }
   return 0;
 }

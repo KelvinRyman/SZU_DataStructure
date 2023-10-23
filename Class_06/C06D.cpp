@@ -1,6 +1,6 @@
-// DS二叉树–左叶子数量
+// DS二叉树--层次遍历
 #include <iostream>
-#include <stack>
+#include <queue>
 using namespace std;
 
 struct TreeNode {
@@ -10,64 +10,52 @@ struct TreeNode {
   explicit TreeNode(char x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-// 迭代创建二叉树
-//TreeNode *buildTree(const string &preorder) {
-//  stack<TreeNode *> nodeStack;
-//  TreeNode *root = new TreeNode(preorder[0]);
-//  nodeStack.push(root);
-//
-//  for (int i = 1; i < preorder.size(); i++) {
-//    if (preorder[i] != '#') {
-//      TreeNode *newNode = new TreeNode(preorder[i]);
-//      if (nodeStack.top()->left == NULL) {
-//        nodeStack.top()->left = newNode;
-//        nodeStack.push(newNode);
-//      } else if (nodeStack.top()->right == NULL) {
-//        nodeStack.top()->right = newNode;
-//        nodeStack.pop();
-//        nodeStack.push(newNode);
-//      }
-//    } else {
-//      if (nodeStack.top()->left == NULL) {
-//        nodeStack.top()->left = NULL;
-//      } else {
-//        nodeStack.top()->right = NULL;
-//      }
-//    }
-//  }
-//
-//  return root;
-//}
-
 TreeNode *buildTree(char *&preorder) {
-  char val = *preorder;
-  preorder++;
+  char val = *preorder++;
   if (val == '0') {
     return nullptr;
   }
 
-  auto *node = new TreeNode(val);
-  node->left = buildTree(preorder);
-  node->right = buildTree(preorder);
-  return node;
+  auto *newNode = new TreeNode(val);
+  newNode->left = buildTree(preorder);
+  newNode->right = buildTree(preorder);
+  return newNode;
 }
 
-int countLeftLeaves(TreeNode *root, bool isLeft) {
-  if (!root) {
-    return 0;
-  }
-
-  if (!root->left && !root->right && isLeft) {
-    return 1;
-  }
-
-  int leftCount = countLeftLeaves(root->left, true);
-  int rightCount = countLeftLeaves(root->right, false);
-
-  return leftCount + rightCount;
+TreeNode *initTree(string preorder) {
+  char *input = &preorder[0];
+  return buildTree(input);
 }
 
-int main() {
+void levelTraversal(TreeNode *root) {
+  if (root) {
+    queue<TreeNode *> nodeQueue;
+    nodeQueue.push(root);
+    while (!nodeQueue.empty()) {
+      TreeNode *node = nodeQueue.front();
+      nodeQueue.pop();
+      cout << node->val;
+
+      if (node->left) {
+        nodeQueue.push(node->left);
+      }
+      if (node->right) {
+        nodeQueue.push(node->right);
+      }
+    }
+    cout << '\n';
+  }
+}
+
+void freeTree(TreeNode *root) {
+  if (root) {
+    freeTree(root->left);
+    freeTree(root->right);
+    delete root;
+  }
+}
+
+int main(int argc, char **argv) {
   ios::sync_with_stdio(false);
   cin.tie(nullptr);
 
@@ -76,11 +64,9 @@ int main() {
   while (t--) {
     string preorder;
     cin >> preorder;
-    char *input = &preorder[0];
-    auto *root = buildTree(input);
+    auto *root = initTree(preorder);
 
-    int leftLeaves = countLeftLeaves(root, false);
-    cout << leftLeaves << '\n';
+    levelTraversal(root);
   }
 
   return 0;

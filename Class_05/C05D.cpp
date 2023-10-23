@@ -1,22 +1,70 @@
-// DS 串应用 — 最长重复子串
-#include <bits/stdc++.h>
+// DS二叉树–左叶子数量
+#include <iostream>
+#include <stack>
 using namespace std;
 
-int longestRepSubStrLength(const string &str) {
-  int n = str.length();
-  vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
-  int maxLength = 0;
+struct TreeNode {
+  char val;
+  TreeNode *left;
+  TreeNode *right;
+  explicit TreeNode(char x) : val(x), left(nullptr), right(nullptr) {}
+};
 
-  for (int i = 1; i <= n; i++) {
-    for (int j = i + 1; j <= n; j++) {
-      if (str[i - 1] == str[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1] + 1;
-        maxLength = max(maxLength, dp[i][j]);
-      }
-    }
+// 迭代创建二叉树
+//TreeNode *buildTree(const string &preorder) {
+//  stack<TreeNode *> nodeStack;
+//  TreeNode *root = new TreeNode(preorder[0]);
+//  nodeStack.push(root);
+//
+//  for (int i = 1; i < preorder.size(); i++) {
+//    if (preorder[i] != '#') {
+//      TreeNode *newNode = new TreeNode(preorder[i]);
+//      if (nodeStack.top()->left == NULL) {
+//        nodeStack.top()->left = newNode;
+//        nodeStack.push(newNode);
+//      } else if (nodeStack.top()->right == NULL) {
+//        nodeStack.top()->right = newNode;
+//        nodeStack.pop();
+//        nodeStack.push(newNode);
+//      }
+//    } else {
+//      if (nodeStack.top()->left == NULL) {
+//        nodeStack.top()->left = NULL;
+//      } else {
+//        nodeStack.top()->right = NULL;
+//      }
+//    }
+//  }
+//
+//  return root;
+//}
+
+TreeNode *buildTree(char *&preorder) {
+  char val = *preorder;
+  preorder++;
+  if (val == '0') {
+    return nullptr;
   }
 
-  return maxLength > 0 ? maxLength : -1;
+  auto *node = new TreeNode(val);
+  node->left = buildTree(preorder);
+  node->right = buildTree(preorder);
+  return node;
+}
+
+int countLeftLeaves(TreeNode *root, bool isLeft) {
+  if (!root) {
+    return 0;
+  }
+
+  if (!root->left && !root->right && isLeft) {
+    return 1;
+  }
+
+  int leftCount = countLeftLeaves(root->left, true);
+  int rightCount = countLeftLeaves(root->right, false);
+
+  return leftCount + rightCount;
 }
 
 int main() {
@@ -25,11 +73,15 @@ int main() {
 
   int t;
   cin >> t;
-  for (int i = 0; i < t; i++) {
-    string str;
-    cin >> str;
+  while (t--) {
+    string preorder;
+    cin >> preorder;
+    char *input = &preorder[0];
+    auto *root = buildTree(input);
 
-    cout << longestRepSubStrLength(str) << '\n';
+    int leftLeaves = countLeftLeaves(root, false);
+    cout << leftLeaves << '\n';
   }
+
   return 0;
 }

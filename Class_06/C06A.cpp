@@ -79,6 +79,7 @@ int main() {
     cout << '\n';
     postorderTraversal(root);
     cout << '\n';
+    freeTree(root);
   }
 
   return 0;

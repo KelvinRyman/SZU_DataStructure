@@ -1,40 +1,39 @@
+// DS队列----银行简单模拟
 #include <iostream>
-#include <stack>
-#include <algorithm>
-
+#include <queue>
 using namespace std;
 
 int main() {
-  int t;
-  cin >> t;
-  cin.ignore();
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
 
-  while (t--) {
-    string str;
-    getline(cin, str);
-    stack<char> st;
-    for (const char &ch: str) {
-      if (ch != '#') {
-        st.push(ch);
-      } else {
-        if (!st.empty()) {
-          st.pop();
-        }
-      }
-    }
+  int n;
+  cin >> n;
+  queue<int> A, B;
+  int id;
+  for (int i = 0; i < n; ++i) {
+    cin >> id;
+    if (id % 2 == 0)
+      B.push(id);
+    else
+      A.push(id);
+  }
 
-    int count = 0;
-    string result;
-    while (!st.empty()) {
-      result += st.top();
-      st.pop();
+  while (!A.empty() || !B.empty()) {
+    if (!A.empty()) {
+      cout << A.front() << " ";
+      A.pop();
     }
-    if (!result.empty()) {
-      reverse(result.begin(), result.end());
-      cout << result << '\n';
-    } else {
-      cout << "NULL\n";
+    if (!A.empty()) {
+      cout << A.front() << " ";
+      A.pop();
+    }
+    if (!B.empty()) {
+      cout << B.front() << " ";
+      B.pop();
     }
   }
+
+  cout << '\n';
   return 0;
 }

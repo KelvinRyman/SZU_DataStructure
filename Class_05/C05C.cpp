@@ -1,21 +1,6 @@
-// 串应用 - 计算一个串的最长的真前后缀
-#include <bits/stdc++.h>
+// DS二叉树–叶子数量
+#include <iostream>
 using namespace std;
-
-string matched_Prefix_postfix(const string &str) {
-  int n = static_cast<int>(str.size());
-  string result;
-
-  for (int i = 1; i < n; i++) {
-    string prefix = str.substr(0, i);
-    string postfix = str.substr(n - i, i);
-
-    if (prefix == postfix) {
-      result = prefix;
-    }
-  }
-  return result.empty() ? "empty" : result;
-}
 
 int main() {
   ios::sync_with_stdio(false);
@@ -24,9 +9,16 @@ int main() {
   int t;
   cin >> t;
   while (t--) {
-    string str;
+    char *str = new char[10005];
     cin >> str;
-    cout << matched_Prefix_postfix(str) << '\n';
+    int count = 0;
+
+    for (auto cur = str; *cur != '\0'; cur++) {
+      if (*cur != '0' && cur[1] == '0' && cur[2] == '0') {
+        count++, cur++;
+      }
+    }
+    cout << count << '\n';
   }
   return 0;
 }

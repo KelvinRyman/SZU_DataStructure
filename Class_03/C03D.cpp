@@ -1,60 +1,44 @@
+// DS队列–组队列
 #include <iostream>
-#include <stack>
+#include <queue>
+#include <unordered_map>
 #include <string>
-
 using namespace std;
 
-stack<string> backwardST;
-stack<string> forwardST;
-
-string currentURL = "http://www.acm.org/";
-
-void visit(const string& url) {
-  backwardST.push(currentURL);
-  currentURL = url;
-  while (!forwardST.empty()) {
-    forwardST.pop();
-  }
-  cout << currentURL << endl;
-}
-
-void back() {
-  if (!backwardST.empty()) {
-    forwardST.push(currentURL);
-    currentURL = backwardST.top();
-    backwardST.pop();
-    cout << currentURL << endl;
-  } else {
-    cout << "Ignored" << endl;
-  }
-}
-
-void forward() {
-  if (!forwardST.empty()) {
-    backwardST.push(currentURL);
-    currentURL = forwardST.top();
-    forwardST.pop();
-    cout << currentURL << endl;
-  } else {
-    cout << "Ignored" << endl;
-  }
-}
-
 int main() {
-  string command;
-  while (cin >> command) {
-    if (command == "QUIT") {
-      break;
-    } else if (command == "VISIT") {
-      string url;
-      cin >> url;
-      visit(url);
-    } else if (command == "BACK") {
-      back();
-    } else if (command == "FORWARD") {
-      forward();
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+
+  int t, n, x;
+  cin >> t;
+  unordered_map<int, int> group;
+  for (int i = 0; i < t; ++i) {
+    cin >> n;
+    for (int j = 0; j < n; ++j) {
+      cin >> x;
+      group[x] = i;
     }
   }
-
+  queue<int> q;
+  queue<int> q_group[10];
+  string command;
+  while (cin >> command) {
+    if (command == "STOP") {
+      break;
+    } else if (command == "ENQUEUE") {
+      cin >> x;
+      if (q_group[group[x]].empty()) {
+        q.push(group[x]);
+      }
+      q_group[group[x]].push(x);
+    } else if (command == "DEQUEUE") {
+      int front_group = q.front();
+      cout << q_group[front_group].front() << " ";
+      q_group[front_group].pop();
+      if (q_group[front_group].empty()) {
+        q.pop();
+      }
+    }
+  }
   return 0;
 }

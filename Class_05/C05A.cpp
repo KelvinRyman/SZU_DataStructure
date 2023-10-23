@@ -1,78 +1,84 @@
-// DS 串应用 - KMP 算法
-#include <bits/stdc++.h>
+// DS二叉树—二叉树构建与遍历（不含框架）
+#include <iostream>
 using namespace std;
 
-class StrSolution {
- public:
-  StrSolution(const string &mainStr) : mainStr(mainStr) {}
-
-  int kmpSearch(const string &pattern, int pos) {
-    int n = mainStr.size();
-    int m = pattern.size();
-    int i = pos, j = 0;
-    getNextArr(pattern);
-
-    while (i < n) {
-      if (j == -1 || mainStr[i] == pattern[j]) {
-        i++;
-        j++;
-      } else {
-        j = next[j];
-      }
-
-      if (j == m) {
-        return i - j + 1;
-      }
-    }
-    return 0;
-  }
-
-  void printNext() {
-    for (int i = 0; i < next.size(); i++) {
-      cout << next[i];
-      if (i < next.size() - 1) {
-        cout << " ";
-      }
-    }
-    cout << endl;
-  }
-
- private:
-  string mainStr;
-  vector<int> next;
-
-  void getNextArr(const string &pattern) {
-    int m = pattern.size();
-    next.resize(m);
-    next[0] = -1;
-    int i = 0, j = -1;
-    while (i < m - 1) {
-      if (j == -1 || pattern[i] == pattern[j]) {
-        i++;
-        j++;
-        next[i] = j;
-      } else {
-        j = next[j];
-      }
-    }
-    printNext();
-  }
+struct TreeNode {
+  char val;
+  TreeNode *left;
+  TreeNode *right;
+  explicit TreeNode(char x) : val(x), left(nullptr), right(nullptr) {}
 };
+
+TreeNode *buildTree(string &preorder, int &index) {
+  if (preorder.empty()) {
+    return nullptr;
+  }
+
+  char val = preorder[index++];
+  if (val == '#') {
+    return nullptr;
+  } else {
+    auto *node = new TreeNode(val);
+    node->left = buildTree(preorder, index);
+    node->right = buildTree(preorder, index);
+    return node;
+  }
+}
+
+TreeNode *initTree(string &preorder) {
+  int index = 0;
+  return buildTree(preorder, index);
+}
+
+void preorderTraversal(TreeNode *root) {
+  if (root) {
+    cout << root->val;
+    preorderTraversal(root->left);
+    preorderTraversal(root->right);
+  }
+}
+
+void inorderTraversal(TreeNode *root) {
+  if (root) {
+    inorderTraversal(root->left);
+    cout << root->val;
+    inorderTraversal(root->right);
+  }
+}
+
+void postorderTraversal(TreeNode *root) {
+  if (root) {
+    postorderTraversal(root->left);
+    postorderTraversal(root->right);
+    cout << root->val;
+  }
+}
+
+void freeTree(struct TreeNode *root) {
+  if (root) {
+    freeTree(root->left);
+    freeTree(root->right);
+    delete root;
+  }
+}
 
 int main() {
   ios::sync_with_stdio(false);
   cin.tie(nullptr);
 
-  int t;
-  cin >> t;
+  int m;
+  cin >> m;
 
-  while (t--) {
-    string mainStr, patternStr;
-    cin >> mainStr >> patternStr;
-    StrSolution ss(mainStr);
-
-    int position = ss.kmpSearch(patternStr, 0);
-    cout << position << endl;
+  while (m--) {
+    string preorder;
+    cin >> preorder;
+    TreeNode *root = initTree(preorder);
+    preorderTraversal(root);
+    cout << '\n';
+    inorderTraversal(root);
+    cout << '\n';
+    postorderTraversal(root);
+    cout << '\n';
   }
 
   return 0;

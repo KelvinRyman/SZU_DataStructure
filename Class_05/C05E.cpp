@@ -1,35 +1,46 @@
-// 子串循环问题(Ver. I)
-#include <bits/stdc++.h>
+// DS二叉树——层次遍历
+#include <iostream>
+#include <queue>
 using namespace std;
 
-vector<int> getNextArr(string str) {
-  int n = str.length();
-  int i = 0, j = -1;
-  vector<int> next(n + 1, 0);
-  next[0] = -1;
-  while (i < n) {
-    if (j == -1 || str[i] == str[j]) {
-      i++;
-      j++;
-      next[i] = j;
-    } else {
-      j = next[j];
-    }
+struct TreeNode {
+  char val;
+  TreeNode *left;
+  TreeNode *right;
+  explicit TreeNode(char x) : val(x), left(nullptr), right(nullptr) {}
+};
+
+TreeNode *buildTree(char *&preorder) {
+  char val = *preorder++;
+  if (val == '0') {
+    return nullptr;
   }
 
-  return next;
+  auto *newNode = new TreeNode(val);
+  newNode->left = buildTree(preorder);
+  newNode->right = buildTree(preorder);
+  return newNode;
 }
 
-int findMinRepPeriodLength(const string &str) {
-  int n = str.length();
-  vector<int> next = getNextArr(str);
-  int cir = n - next[n], adl;
-  if (cir != n && n % cir == 0) {
-    adl = 0;
-  } else {
-    adl = cir - n % cir;
+void levelTraversal(TreeNode *root) {
+  if (!root) {
+    return;
   }
-  return adl;
+
+  queue<TreeNode *> nodeQueue;
+  nodeQueue.push(root);
+  while (!nodeQueue.empty()) {
+    TreeNode *node = nodeQueue.front();
+    nodeQueue.pop();
+    cout << node->val;
+    if (node->left) {
+      nodeQueue.push(node->left);
+    }
+    if (node->right) {
+      nodeQueue.push(node->right);
+    }
+  }
+  cout << '\n';
 }
 
 int main() {
@@ -39,9 +50,13 @@ int main() {
   int t;
   cin >> t;
   while (t--) {
-    string str;
-    cin >> str;
-    cout << findMinRepPeriodLength(str) << '\n';
+    string preorder;
+    cin >> preorder;
+    char *input = &preorder[0];
+    TreeNode *root = buildTree(input);
+
+    levelTraversal(root);
   }
+
   return 0;
 }
